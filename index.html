@@ -257,3 +257,650 @@
     }
 
     .card-flipper {
+      position: relative;
+      display: block;
+      min-height: inherit;
+      border-radius: 8px;
+      transform-style: preserve-3d;
+      transition: transform 680ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .link-card.is-opening .card-flipper {
+      transform: rotateY(180deg);
+    }
+
+    .card-face {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      min-height: inherit;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: clamp(16px, 2.3vw, 26px);
+      padding: clamp(18px, 2.6vw, 24px);
+      overflow: hidden;
+      border: 1px solid rgba(29, 29, 31, 0.08);
+      border-radius: 8px;
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.72) 44%, rgba(255, 255, 255, 0.56)),
+        linear-gradient(150deg, var(--card-bg-strong), var(--card-bg));
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.9),
+        0 12px 40px var(--shadow);
+      backdrop-filter: blur(22px) saturate(1.18);
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      pointer-events: none;
+    }
+
+    .card-face::after {
+      position: absolute;
+      inset: 0;
+      content: "";
+      background: linear-gradient(110deg, transparent 20%, rgba(255, 255, 255, 0.62) 48%, transparent 72%);
+      opacity: 0;
+      transform: translateX(-65%);
+      transition: transform 640ms cubic-bezier(0.16, 1, 0.3, 1), opacity 280ms ease;
+    }
+
+    .card-entry.is-hovered .card-face::after,
+    .card-entry:focus-within .card-face::after,
+    .link-card:focus-visible .card-face::after {
+      opacity: 1;
+      transform: translateX(65%);
+    }
+
+    .card-back {
+      place-items: center;
+      grid-template-columns: 1fr;
+      transform: rotateY(180deg);
+      background:
+        linear-gradient(135deg, rgba(191, 155, 95, 0.18), transparent 42%),
+        linear-gradient(150deg, rgba(255, 255, 255, 0.98), rgba(242, 242, 244, 0.94));
+    }
+
+    .card-no {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      width: clamp(46px, 7vw, 62px);
+      aspect-ratio: 1;
+      place-items: center;
+      border: 1px solid rgba(191, 155, 95, 0.3);
+      border-radius: 50%;
+      color: var(--gold-bright);
+      font-size: clamp(0.78rem, 1.2vw, 0.92rem);
+      font-weight: 700;
+      background: rgba(191, 155, 95, 0.08);
+      box-shadow: inset 0 0 18px rgba(191, 155, 95, 0.06);
+    }
+
+    .card-copy {
+      position: relative;
+      z-index: 1;
+      min-width: 0;
+    }
+
+    .card-label {
+      display: block;
+      margin: 0 0 7px;
+      color: var(--ink);
+      font-family: "Noto Sans JP", "Space Grotesk", sans-serif;
+      font-size: clamp(1.04rem, 2.2vw, 1.38rem);
+      font-weight: 700;
+      line-height: 1.25;
+      overflow-wrap: anywhere;
+    }
+
+    .card-sub {
+      display: block;
+      margin: 0;
+      color: var(--ink-muted);
+      font-size: clamp(0.84rem, 1.5vw, 0.98rem);
+      font-weight: 500;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+    }
+
+    .card-arrow {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      width: clamp(38px, 5vw, 48px);
+      aspect-ratio: 1;
+      place-items: center;
+      border: 1px solid rgba(23, 19, 13, 0.12);
+      border-radius: 50%;
+      color: var(--gold-bright);
+      font-size: 1.2rem;
+      background: rgba(255, 255, 255, 0.58);
+      transform: translateZ(28px);
+      transition: border-color 300ms ease, background 300ms ease, transform 300ms ease;
+    }
+
+    .card-entry.is-hovered .card-arrow,
+    .card-entry:focus-within .card-arrow,
+    .link-card:focus-visible .card-arrow {
+      border-color: rgba(191, 155, 95, 0.48);
+      background: rgba(191, 155, 95, 0.1);
+      transform: translate3d(2px, -2px, 34px);
+    }
+
+    .card-back-text {
+      color: var(--gold-bright);
+      font-size: clamp(1.28rem, 4vw, 2rem);
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .footer {
+      width: min(100%, var(--max-width));
+      margin: clamp(28px, 5vw, 54px) auto 0;
+      color: rgba(23, 19, 13, 0.48);
+      font-family: "Noto Sans JP", "Space Grotesk", sans-serif;
+      font-size: 0.86rem;
+      text-align: right;
+      opacity: 0;
+      animation: fadeIn 0.9s 1.25s ease forwards;
+    }
+
+    .cursor-dot,
+    .cursor-ring {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 10;
+      pointer-events: none;
+      border-radius: 999px;
+      transform: translate(-50%, -50%);
+      will-change: top, left, width, height, opacity;
+    }
+
+    .cursor-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--gold-bright);
+      box-shadow: 0 0 18px rgba(168, 125, 50, 0.42);
+    }
+
+    .cursor-ring {
+      width: 34px;
+      height: 34px;
+      border: 1px solid rgba(200, 169, 110, 0.62);
+      transition: width 180ms ease, height 180ms ease, opacity 180ms ease, border-color 180ms ease;
+    }
+
+    body.cursor-hover .cursor-ring {
+      width: 58px;
+      height: 58px;
+      border-color: rgba(168, 125, 50, 0.84);
+      opacity: 0.82;
+    }
+
+    @keyframes titleClip {
+      to {
+        clip-path: inset(0 0 0 0);
+      }
+    }
+
+    @keyframes titleRise {
+      to {
+        transform: translateY(0) rotateX(0);
+      }
+    }
+
+    @keyframes cardEntry {
+      to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0) rotateX(0) scale(1);
+      }
+    }
+
+    @keyframes cardFloat {
+      0%, 100% {
+        transform: translate3d(var(--x), 0, var(--z)) rotateX(var(--base-rx)) rotateY(var(--base-ry));
+      }
+
+      50% {
+        transform: translate3d(calc(var(--x) + var(--sway)), -5px, calc(var(--z) + 10px)) rotateX(calc(var(--base-rx) + 0.7deg)) rotateY(calc(var(--base-ry) - 0.8deg));
+      }
+    }
+
+    @keyframes lineTravel {
+      from {
+        transform: translateX(-110%);
+      }
+
+      to {
+        transform: translateX(260%);
+      }
+    }
+
+    @keyframes fadeRise {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+      }
+    }
+
+    @media (max-width: 720px) {
+      :root {
+        --page-pad: clamp(18px, 6vw, 28px);
+      }
+
+      body {
+        cursor: auto;
+      }
+
+      .scene {
+        min-height: calc(100svh - 110px);
+        gap: 34px;
+      }
+
+      .title {
+        line-height: 1;
+      }
+
+      .title-en {
+        -webkit-text-stroke-width: 0.8px;
+      }
+
+      .card-face {
+        grid-template-columns: auto 1fr auto;
+        gap: 14px;
+        padding: 18px;
+      }
+
+      .card-sub {
+        max-width: 100%;
+        font-size: clamp(0.78rem, 3.45vw, 0.94rem);
+        line-height: 1.35;
+        white-space: nowrap;
+      }
+
+      .card-no {
+        width: 42px;
+      }
+
+      .card-arrow {
+        width: 38px;
+      }
+
+      .footer {
+        text-align: left;
+      }
+    }
+
+    @media (hover: none), (pointer: coarse) {
+      body {
+        cursor: auto;
+      }
+
+      .cursor-dot,
+      .cursor-ring {
+        display: none;
+      }
+
+      .card-float {
+        animation-duration: 11s;
+      }
+
+      .link-card,
+      .card-entry.is-hovered .link-card,
+      .card-entry:focus-within .link-card,
+      .link-card:focus-visible {
+        --rx: 0deg;
+        --ry: 0deg;
+        --lift: 0px;
+      }
+
+      .link-card::before {
+        filter: blur(10px);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="particle-canvas" aria-hidden="true"></canvas>
+  <main class="page">
+    <section class="scene" aria-label="野澤昂汰 Nozawa Kota links">
+      <header class="profile">
+        <p class="eyebrow">@neru8376</p>
+        <h1 class="title">
+          <span class="title-line title-jp"><span>野澤昂汰</span></span>
+          <span class="title-line title-en"><span>Nozawa Kota</span></span>
+        </h1>
+        <div class="profile-line" aria-hidden="true"></div>
+      </header>
+      <div class="link-stage" id="link-stage"></div>
+    </section>
+    <footer class="footer">© 2026 野澤昂汰</footer>
+  </main>
+  <div class="cursor-dot" aria-hidden="true"></div>
+  <div class="cursor-ring" aria-hidden="true"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script>
+    const LINKS = [
+      {
+        label: "公認 井口智明チャンネル",
+        sub: "令和の虎 公認クリップ",
+        url: "https://youtube.com/channel/UC6-OB72njfEpepZqeGRE69A?si=v36pZFlOIGTG3FzS"
+      },
+      {
+        label: "X（Twitter）",
+        sub: "@neru8376",
+        url: "https://x.com/neru8376?s=21"
+      }
+    ];
+
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const isTouchDevice = window.matchMedia("(hover: none), (pointer: coarse)").matches;
+
+    if (isTouchDevice) {
+      document.documentElement.classList.add("is-touch");
+    }
+
+    function escapeHtml(value) {
+      return value.replace(/[&<>"']/g, function (char) {
+        return {
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          "\"": "&quot;",
+          "'": "&#39;"
+        }[char];
+      });
+    }
+
+    function renderLinks() {
+      const stage = document.getElementById("link-stage");
+      const cardPositions = [
+        { x: "-8px", z: "18px", sway: "3px", rx: "0.1deg", ry: "-1.2deg", duration: "9s" },
+        { x: "10px", z: "0px", sway: "-4px", rx: "-0.2deg", ry: "1.4deg", duration: "9.6s" },
+        { x: "-2px", z: "22px", sway: "3px", rx: "0.1deg", ry: "-0.8deg", duration: "10.2s" }
+      ];
+
+      stage.innerHTML = LINKS.map(function (link, index) {
+        const pos = cardPositions[index] || cardPositions[0];
+        return `
+          <div class="card-entry" style="--i:${index};">
+            <div class="card-float" style="--i:${index}; --x:${pos.x}; --z:${pos.z}; --sway:${pos.sway}; --base-rx:${pos.rx}; --base-ry:${pos.ry}; --float-duration:${pos.duration};">
+              <a class="link-card" href="${escapeHtml(link.url)}" rel="noopener noreferrer" aria-label="${escapeHtml(link.label)}">
+                <span class="card-flipper">
+                  <span class="card-face card-front">
+                    <span class="card-no">${String(index + 1).padStart(2, "0")}</span>
+                    <span class="card-copy">
+                      <span class="card-label">${escapeHtml(link.label)}</span>
+                      <span class="card-sub">${escapeHtml(link.sub)}</span>
+                    </span>
+                    <span class="card-arrow" aria-hidden="true">↗</span>
+                  </span>
+                  <span class="card-face card-back">
+                    <span class="card-back-text">Open</span>
+                  </span>
+                </span>
+              </a>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function setupCards() {
+      const entries = Array.from(document.querySelectorAll(".card-entry"));
+
+      entries.forEach(function (entry) {
+        const card = entry.querySelector(".link-card");
+        const tilt = {
+          currentX: 0,
+          currentY: 0,
+          targetX: 0,
+          targetY: 0,
+          frame: null
+        };
+
+        function renderTilt() {
+          tilt.currentX += (tilt.targetX - tilt.currentX) * 0.18;
+          tilt.currentY += (tilt.targetY - tilt.currentY) * 0.18;
+          card.style.setProperty("--rx", tilt.currentX.toFixed(2) + "deg");
+          card.style.setProperty("--ry", tilt.currentY.toFixed(2) + "deg");
+
+          if (Math.abs(tilt.targetX - tilt.currentX) > 0.02 || Math.abs(tilt.targetY - tilt.currentY) > 0.02) {
+            tilt.frame = requestAnimationFrame(renderTilt);
+          } else {
+            tilt.currentX = tilt.targetX;
+            tilt.currentY = tilt.targetY;
+            card.style.setProperty("--rx", tilt.currentX.toFixed(2) + "deg");
+            card.style.setProperty("--ry", tilt.currentY.toFixed(2) + "deg");
+            tilt.frame = null;
+          }
+        }
+
+        function queueTilt(nextX, nextY) {
+          tilt.targetX = nextX;
+          tilt.targetY = nextY;
+          if (!tilt.frame) {
+            tilt.frame = requestAnimationFrame(renderTilt);
+          }
+        }
+
+        if (!isTouchDevice && !prefersReducedMotion) {
+          entry.addEventListener("pointermove", function (event) {
+            const rect = entry.getBoundingClientRect();
+            const x = (event.clientX - rect.left) / rect.width - 0.5;
+            const y = (event.clientY - rect.top) / rect.height - 0.5;
+            queueTilt(-y * 4.5, x * 6);
+          });
+
+          entry.addEventListener("pointerleave", function () {
+            queueTilt(0, 0);
+          });
+        }
+
+        entry.addEventListener("pointerenter", function () {
+          entry.classList.add("is-hovered");
+          document.body.classList.add("cursor-hover");
+        });
+
+        entry.addEventListener("pointerleave", function () {
+          entry.classList.remove("is-hovered");
+          document.body.classList.remove("cursor-hover");
+        });
+
+        card.addEventListener("pointerdown", function () {
+          card.classList.add("is-opening");
+          setTimeout(function () {
+            card.classList.remove("is-opening");
+          }, prefersReducedMotion ? 80 : 520);
+        });
+      });
+    }
+
+    function setupCursor() {
+      if (isTouchDevice) return;
+
+      const dot = document.querySelector(".cursor-dot");
+      const ring = document.querySelector(".cursor-ring");
+      const cursor = {
+        x: window.innerWidth / 2,
+        y: window.innerHeight / 2,
+        ringX: window.innerWidth / 2,
+        ringY: window.innerHeight / 2
+      };
+
+      window.addEventListener("pointermove", function (event) {
+        cursor.x = event.clientX;
+        cursor.y = event.clientY;
+      }, { passive: true });
+
+      function animateCursor() {
+        cursor.ringX += (cursor.x - cursor.ringX) * 0.16;
+        cursor.ringY += (cursor.y - cursor.ringY) * 0.16;
+        dot.style.left = cursor.x + "px";
+        dot.style.top = cursor.y + "px";
+        ring.style.left = cursor.ringX + "px";
+        ring.style.top = cursor.ringY + "px";
+        requestAnimationFrame(animateCursor);
+      }
+
+      animateCursor();
+    }
+
+    function createParticleTexture() {
+      const canvas = document.createElement("canvas");
+      const size = 96;
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext("2d");
+      const gradient = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+      gradient.addColorStop(0, "rgba(177, 130, 46, 0.96)");
+      gradient.addColorStop(0.28, "rgba(200, 169, 110, 0.62)");
+      gradient.addColorStop(0.66, "rgba(200, 169, 110, 0.18)");
+      gradient.addColorStop(1, "rgba(200, 169, 110, 0)");
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, size, size);
+      return new THREE.CanvasTexture(canvas);
+    }
+
+    function setupParticles() {
+      if (!window.THREE) return;
+
+      const canvas = document.getElementById("particle-canvas");
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(58, window.innerWidth / window.innerHeight, 0.1, 500);
+      const renderer = new THREE.WebGLRenderer({
+        canvas: canvas,
+        alpha: true,
+        antialias: !isTouchDevice
+      });
+
+      const particleCount = prefersReducedMotion ? 140 : (isTouchDevice ? 240 : 860);
+      const spreadX = isTouchDevice ? 72 : 116;
+      const spreadY = isTouchDevice ? 82 : 104;
+      const positions = new Float32Array(particleCount * 3);
+      const colors = new Float32Array(particleCount * 3);
+      const baseX = new Float32Array(particleCount);
+      const baseZ = new Float32Array(particleCount);
+      const speed = new Float32Array(particleCount);
+      const phase = new Float32Array(particleCount);
+      const gold = new THREE.Color("#b58a3d");
+      const cream = new THREE.Color("#d4bd87");
+
+      for (let i = 0; i < particleCount; i += 1) {
+        const i3 = i * 3;
+        baseX[i] = (Math.random() - 0.5) * spreadX;
+        baseZ[i] = (Math.random() - 0.5) * 140;
+        positions[i3] = baseX[i];
+        positions[i3 + 1] = (Math.random() - 0.5) * spreadY;
+        positions[i3 + 2] = baseZ[i];
+        speed[i] = 0.018 + Math.random() * 0.034;
+        phase[i] = Math.random() * Math.PI * 2;
+
+        const mixed = gold.clone().lerp(cream, 0.25 + Math.random() * 0.55);
+        colors[i3] = mixed.r;
+        colors[i3 + 1] = mixed.g;
+        colors[i3 + 2] = mixed.b;
+      }
+
+      const geometry = new THREE.BufferGeometry();
+      geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+      geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+
+      const material = new THREE.PointsMaterial({
+        size: isTouchDevice ? 0.52 : 0.66,
+        map: createParticleTexture(),
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.72,
+        depthWrite: false,
+        blending: THREE.NormalBlending
+      });
+
+      const points = new THREE.Points(geometry, material);
+      scene.add(points);
+      camera.position.z = 82;
+
+      const mouse = { x: 0, y: 0 };
+      const smoothMouse = { x: 0, y: 0 };
+      const clock = new THREE.Clock();
+
+      function resize() {
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        renderer.setSize(width, height, false);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isTouchDevice ? 1.25 : 1.8));
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
+      }
+
+      window.addEventListener("resize", resize, { passive: true });
+
+      if (!isTouchDevice) {
+        window.addEventListener("pointermove", function (event) {
+          mouse.x = (event.clientX / window.innerWidth - 0.5) * 2;
+          mouse.y = (event.clientY / window.innerHeight - 0.5) * -2;
+        }, { passive: true });
+      }
+
+      function animateParticles() {
+        const delta = Math.min(clock.getDelta(), 0.04);
+        const elapsed = clock.elapsedTime;
+
+        smoothMouse.x += (mouse.x - smoothMouse.x) * 0.045;
+        smoothMouse.y += (mouse.y - smoothMouse.y) * 0.045;
+
+        if (!prefersReducedMotion) {
+          const positionArray = geometry.attributes.position.array;
+          for (let i = 0; i < particleCount; i += 1) {
+            const i3 = i * 3;
+            positionArray[i3] = baseX[i] + Math.sin(elapsed * 0.38 + phase[i]) * 1.25;
+            positionArray[i3 + 1] += speed[i] * delta * 34;
+            positionArray[i3 + 2] = baseZ[i] + Math.cos(elapsed * 0.24 + phase[i]) * 1.1;
+
+            if (positionArray[i3 + 1] > spreadY / 2) {
+              positionArray[i3 + 1] = -spreadY / 2;
+              baseX[i] = (Math.random() - 0.5) * spreadX;
+              baseZ[i] = (Math.random() - 0.5) * 140;
+            }
+          }
+          geometry.attributes.position.needsUpdate = true;
+        }
+
+        points.rotation.x = smoothMouse.y * 0.075 + Math.sin(elapsed * 0.08) * 0.025;
+        points.rotation.y = smoothMouse.x * 0.1 + elapsed * 0.012;
+        points.position.x = smoothMouse.x * 5;
+        points.position.y = smoothMouse.y * 3.6;
+
+        renderer.render(scene, camera);
+        requestAnimationFrame(animateParticles);
+      }
+
+      resize();
+      animateParticles();
+    }
+
+    renderLinks();
+    setupCards();
+    setupCursor();
+    setupParticles();
+  </script>
+</body>
+</html>
